@@ -2656,28 +2656,25 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\kalis\\.nuget\\packages\\": {}
+    "C:\\Users\\Vinosaurus\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\kalis\\OneDrive\\Desktop\\Microservices\\MyBackendServices\\CatalogService\\CatalogService.csproj",
+      "projectUniqueName": "C:\\Users\\Vinosaurus\\Desktop\\MyBackEndServices\\Simple-.NET-API\\CatalogService\\CatalogService.csproj",
       "projectName": "CatalogService",
-      "projectPath": "C:\\Users\\kalis\\OneDrive\\Desktop\\Microservices\\MyBackendServices\\CatalogService\\CatalogService.csproj",
-      "packagesPath": "C:\\Users\\kalis\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\kalis\\OneDrive\\Desktop\\Microservices\\MyBackendServices\\CatalogService\\obj\\",
+      "projectPath": "C:\\Users\\Vinosaurus\\Desktop\\MyBackEndServices\\Simple-.NET-API\\CatalogService\\CatalogService.csproj",
+      "packagesPath": "C:\\Users\\Vinosaurus\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\Vinosaurus\\Desktop\\MyBackEndServices\\Simple-.NET-API\\CatalogService\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "C:\\Users\\kalis\\AppData\\Roaming\\NuGet\\NuGet.Config",
-        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        "C:\\Users\\Vinosaurus\\AppData\\Roaming\\NuGet\\NuGet.Config"
       ],
       "originalTargetFrameworks": [
         "net8.0"
       ],
       "sources": {
-        "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
-        "https://api.nuget.org/v3/index.json": {},
-        "https://www.nuget.org/api/v2": {}
+        "https://api.nuget.org/v3/index.json": {}
       },
       "frameworks": {
         "net8.0": {
@@ -2740,7 +2737,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.201/PortableRuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.300/PortableRuntimeIdentifierGraph.json"
       }
     }
   }

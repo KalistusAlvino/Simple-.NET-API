@@ -1,23 +1,58 @@
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.Design;
 using System.Linq;
 using System.Threading.Tasks;
+using CatalogServices.Models;
+using System.Data.SqlClient;
 using CatalogService.DAL.Interfaces;
 using CatalogService.Models;
-using System.Data.SqlClient;
 
-namespace CatalogService.DAL
+namespace CatalogServices.DAL
 {
-    public class CategoryDAL : ICategory
+    public class CatagoryDAL : ICategory
     {
+        private readonly IConfiguration _config;
+        public CatagoryDAL(IConfiguration config)
+        {
+            _config = config;
+        }
+
         private string GetConnectionString()
         {
-            return "Data Source=KULIAH\\SQLEXPRESS01;Initial Catalog=CatalogDb;integrated security=True";
+            return _config.GetConnectionString("DefaultConnection");
         }
-        public void Delete(Category obj)
+
+        public void Delete(int id)
         {
-            throw new NotImplementedException();
+            using (SqlConnection conn = new SqlConnection(GetConnectionString()))
+            {
+                var strSql = @"DELETE FROM Categories 
+                               WHERE CategoryID = @CategoryID";
+                SqlCommand cmd = new SqlCommand(strSql, conn);
+                cmd.Parameters.AddWithValue("@CategoryID", id);
+                try
+                {
+                    conn.Open();
+                    var result = cmd.ExecuteNonQuery();
+                    if (result != 1)
+                    {
+                        throw new ArgumentException("Data gagal dihapus");
+                    }
+                }
+                catch (SqlException sqlEx)
+                {
+                    throw new ArgumentException($"Error: {sqlEx.Message} - {sqlEx.Number}");
+                }
+                catch (Exception ex)
+                {
+                    throw new ArgumentException($"Error: {ex.Message}");
+                }
+                finally
+                {
+                    cmd.Dispose();
+                    conn.Close();
+                }
+            }
         }
 
         public IEnumerable<Category> GetAll()
@@ -52,8 +87,8 @@ namespace CatalogService.DAL
             Category category = new Category();
             using (SqlConnection conn = new SqlConnection(GetConnectionString()))
             {
-                var strSql = @"SELECT * FROM Categories 
-                            where CategoryID = @CategoryID";
+                var strSql = @"SELECT * FROM Categories
+                            WHERE CategoryID = @CategoryID";
                 SqlCommand cmd = new SqlCommand(strSql, conn);
                 cmd.Parameters.AddWithValue("@CategoryID", id);
                 conn.Open();
@@ -63,7 +98,6 @@ namespace CatalogService.DAL
                     dr.Read();
                     category.CategoryID = Convert.ToInt32(dr["CategoryID"]);
                     category.CategoryName = dr["CategoryName"].ToString();
-
                 }
                 dr.Close();
                 cmd.Dispose();
@@ -73,6 +107,34 @@ namespace CatalogService.DAL
             }
         }
 
+        public IEnumerable<Category> GetByName(string name)
+        {
+            using (SqlConnection conn = new SqlConnection(GetConnectionString()))
+            {
+                List<Category> categories = new List<Category>();
+                var strSql = @"SELECT * FROM Categories
+                            WHERE CategoryName LIKE @CategoryName";
+                SqlCommand cmd = new SqlCommand(strSql, conn);
+                cmd.Parameters.AddWithValue("@CategoryName", "%" + name + "%");
+                conn.Open();
+                SqlDataReader dr = cmd.ExecuteReader();
+                if (dr.HasRows)
+                {
+                    while (dr.Read())
+                    {
+                        Category category = new Category();
+                        category.CategoryID = Convert.ToInt32(dr["CategoryID"]);
+                        category.CategoryName = dr["CategoryName"].ToString();
+                        categories.Add(category);
+                    }
+                }
+                dr.Close();
+                cmd.Dispose();
+                conn.Close();
+
+                return categories;
+            }
+        }
 
         public void Insert(Category obj)
         {
@@ -97,7 +159,7 @@ namespace CatalogService.DAL
                 }
                 catch (Exception ex)
                 {
-                    throw new ArgumentException($"Error : {ex.Message}");
+                    throw new ArgumentException($"Error: {ex.Message}");
                 }
                 finally
                 {
@@ -111,8 +173,8 @@ namespace CatalogService.DAL
         {
             using (SqlConnection conn = new SqlConnection(GetConnectionString()))
             {
-                var strSql = @"UPDATE Categories SET CategoryName = @CategoryName
-                    WHERE CategoryID = @CategoryID";
+                var strSql = @"UPDATE Categories SET CategoryName = @CategoryName 
+                            WHERE CategoryID = @CategoryID";
                 SqlCommand cmd = new SqlCommand(strSql, conn);
                 cmd.Parameters.AddWithValue("@CategoryName", obj.CategoryName);
                 cmd.Parameters.AddWithValue("@CategoryID", obj.CategoryID);
@@ -132,39 +194,7 @@ namespace CatalogService.DAL
                 }
                 catch (Exception ex)
                 {
-                    throw new ArgumentException($"Error : {ex.Message}");
-                }
-                finally
-                {
-                    cmd.Dispose();
-                    conn.Close();
-                }
-            }
-        }
-        public void Delete(int id)
-        {
-            using (SqlConnection conn = new SqlConnection(GetConnectionString()))
-            {
-                var strSql = @"DELETE FROM Categories WHERE CategoryID = @CategoryID";
-                SqlCommand cmd = new SqlCommand(strSql, conn);
-                cmd.Parameters.AddWithValue("@CategoryID", id);
-
-                try
-                {
-                    conn.Open();
-                    var result = cmd.ExecuteNonQuery();
-                    if (result != 1)
-                    {
-                        throw new ArgumentException("Data gagal disimpan");
-                    }
-                }
-                catch (SqlException sqlEx)
-                {
-                    throw new ArgumentException($"Error: {sqlEx.Message} - {sqlEx.Number}");
-                }
-                catch (Exception ex)
-                {
-                    throw new ArgumentException($"Error : {ex.Message}");
+                    throw new ArgumentException($"Error: {ex.Message}");
                 }
                 finally
                 {
@@ -174,32 +204,5 @@ namespace CatalogService.DAL
             }
         }
 
-        public IEnumerable<Category> GetByName(string name)
-        {
-            List<Category> categories = new List<Category>();
-            using (SqlConnection conn = new SqlConnection(GetConnectionString()))
-            {
-                var strSql = $"SELECT * FROM Categories WHERE CategoryName LIKE '%' + @CategoryName + '%'";
-                SqlCommand cmd = new SqlCommand(strSql, conn);
-                cmd.Parameters.AddWithValue("@categoryName", name);
-                conn.Open();
-                SqlDataReader dr = cmd.ExecuteReader();
-                if (dr.HasRows)
-                {
-                    while (dr.Read())
-                    {
-                        Category category = new Category();
-                        category.CategoryID = Convert.ToInt32(dr["CategoryID"]);
-                        category.CategoryName = dr["CategoryName"].ToString();
-                        categories.Add(category);
-                    }
-                }
-                dr.Close();
-                cmd.Dispose();
-                conn.Close();
-
-                return categories;
-            }
-        }
     }
 }
