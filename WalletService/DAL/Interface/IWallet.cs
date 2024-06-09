@@ -10,5 +10,6 @@ namespace WalletService.Interface
     public interface IWallet : ICrud<Wallet>
     {
         void UpdateSaldoAfterOrder(WalletUpdateSaldoDTO walletUpdateSaldoDTO);
+        void UpdateSaldoAfterTopUp(WalletUpdateSaldoDTO walletUpdateSaldoDTO);
     }
 }

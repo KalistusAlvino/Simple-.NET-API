@@ -7,7 +7,9 @@ namespace WalletService.DTO
 {
     public class WalletUpdateSaldoDTO
     {
-        public int userId { get; set; }
+        public string username { get; set; }
+        public string? paymentid { get; set; }
+        public string? paymentwallet { get; set; }
         public int saldo { get; set; }
     }
 }

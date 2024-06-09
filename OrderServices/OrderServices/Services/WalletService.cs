@@ -18,18 +18,19 @@ namespace OrderServices.Services
             _httpClient = httpClient;
             _httpClient.BaseAddress = new Uri("http://localhost:5047");
         }
-        public async Task<Wallet> GetUserWalletById(int id)
+
+        public async Task<Wallet> GetUserWalletByUsername(string username)
         {
-            var response = await _httpClient.GetAsync($"/api/wallet/{id}");
-            if (response.IsSuccessStatusCode)
+            var response = await _httpClient.GetAsync($"/api/wallet/{username}");
+            if(response.IsSuccessStatusCode)
             {
                 var results = await response.Content.ReadAsStringAsync();
-                var wallet = JsonSerializer.Deserialize<Wallet>(results);
-                if(wallet == null)
+                var wallet = JsonSerializer.Deserialize<List<Wallet>>(results);
+                if (wallet == null)
                 {
                     throw new ArgumentException("Cannot get wallet");
                 }
-                return wallet;
+                return wallet[0];
             }
             else
             {
@@ -41,7 +42,7 @@ namespace OrderServices.Services
         {
             var json = JsonSerializer.Serialize(walletUpdateSaldoDTO);
             var data = new StringContent(json, Encoding.UTF8, "application/json");
-            var response = await _httpClient.PutAsync("/api/wallet/updatesaldo", data);
+            var response = await _httpClient.PutAsync("/api/wallet/bayar", data);
             if (!response.IsSuccessStatusCode)
             {
                 throw new ArgumentException($"Cannot update wallet saldo - httpstatus: {response.StatusCode}");

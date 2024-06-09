@@ -9,7 +9,7 @@ namespace OrderServices.Services
 {
     public interface IWalletService
     {
-        Task<Wallet> GetUserWalletById(int id);
+        Task<Wallet> GetUserWalletByUsername(string username);
 
         Task UpdateSaldoWallet(WalletUpdateSaldoDTO walletUpdateSaldoDTO);
     }

@@ -2,11 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using OrderServices.Models;
+using ShippingServices.Models;
 
-namespace OrderServices.DAL.Interface
+namespace ShippingServices.DAL.Interface
 {
-    public interface ICustomer : ICrud<Customer>
+    public interface IShipping : ICrud<Shipping>
     {
         
     }

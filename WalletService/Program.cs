@@ -23,18 +23,32 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.MapGet("/api/wallet/{id}", (IWallet walletDapper, int id) =>
+app.MapGet("/api/wallet", (IWallet walletDapper) =>
 {
-    WalletDTO walletDTO = new WalletDTO();
-    var wallet = walletDapper.GetById(id);
-    if (wallet == null)
+    List<WalletDTO> walletDTO = new List<WalletDTO>();
+    var wallet = walletDapper.GetAll();
+    foreach (var wal in wallet)
     {
-        return Results.NotFound();
+        walletDTO.Add(new WalletDTO
+        {
+            username = wal.username,
+            saldo = wal.saldo
+        });
     }
-    walletDTO.username = wallet.username;
-    walletDTO.password = wallet.password;
-    walletDTO.fullname = wallet.fullname;
-    walletDTO.saldo = wallet.saldo;
+    return Results.Ok(walletDTO);
+});
+app.MapGet("/api/wallet/{username}", (IWallet walletDapper, string username) =>
+{
+    List<WalletDTO> walletDTO = new List<WalletDTO>();
+    var wallet = walletDapper.GetByUsername(username);
+    foreach (var wal in wallet)
+    {
+        walletDTO.Add(new WalletDTO
+        {
+            username = wal.username,
+            saldo = wal.saldo
+        });
+    }
     return Results.Ok(walletDTO);
 });
 
@@ -45,14 +59,12 @@ app.MapPost("/api/wallet", (IWallet walletDapper, WalletCreateDTO walletCreateDT
         Wallet wallet = new Wallet
         {
             username = walletCreateDTO.username,
-            password = walletCreateDTO.password,
-            fullname = walletCreateDTO.fullname,
             saldo = walletCreateDTO.saldo
         };
         walletDapper.Insert(wallet);
 
         //return 201 Created
-        return Results.Created($"/api/wallet/{wallet.userId}", wallet);
+        return Results.Created($"/api/wallet/{wallet.username}", wallet);
     }
     catch (Exception ex)
     {
@@ -60,11 +72,23 @@ app.MapPost("/api/wallet", (IWallet walletDapper, WalletCreateDTO walletCreateDT
     }
 });
 
-app.MapPut("/api/wallet/updatesaldo", (IWallet walletDapper, WalletUpdateSaldoDTO walletUpdateSaldoDTO) =>
+app.MapPut("/api/wallet/bayar", (IWallet walletDapper, WalletUpdateSaldoDTO walletUpdateSaldoDTO) =>
 {
     try
     {
         walletDapper.UpdateSaldoAfterOrder(walletUpdateSaldoDTO);
+        return Results.Ok();
+    }
+    catch (Exception ex)
+    {
+        return Results.BadRequest(ex.Message);
+    }
+});
+app.MapPut("/api/wallet/topup", (IWallet walletDapper, WalletUpdateSaldoDTO walletUpdateSaldoDTO) =>
+{
+    try
+    {
+        walletDapper.UpdateSaldoAfterTopUp(walletUpdateSaldoDTO);
         return Results.Ok();
     }
     catch (Exception ex)

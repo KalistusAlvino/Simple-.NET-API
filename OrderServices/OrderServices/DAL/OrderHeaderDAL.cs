@@ -59,9 +59,9 @@ namespace OrderServices.DAL
         {
             using (var connection = new SqlConnection(GetConnectionString()))
             {
-                var strSql = @"INSERT INTO OrderHeaders (userId, OrderDate) VALUES (@userId, @OrderDate);
+                var strSql = @"INSERT INTO OrderHeaders (username, OrderDate) VALUES (@username, @OrderDate);
                 SELECT @@IDENTITY";
-                var param = new { userId = obj.userId, OrderDate = DateTime.Now };
+                var param = new { username = obj.username, OrderDate = DateTime.Now };
                 try
                 {
                     var id = connection.ExecuteScalar<int>(strSql, param);
@@ -83,8 +83,8 @@ namespace OrderServices.DAL
         {
             using (var connection = new SqlConnection(GetConnectionString()))
             {
-                var strSql = @"UPDATE OrderHeaders SET userId = @userId, OrderDate = @OrderDate WHERE OrderHeaderId = @OrderHeaderId;";
-                var param = new { userId = obj.userId, OrderDate = obj.OrderDate, OrderHeaderId = obj.OrderHeaderId };
+                var strSql = @"UPDATE OrderHeaders SET username = @username, OrderDate = @OrderDate WHERE OrderHeaderId = @OrderHeaderId;";
+                var param = new { username = obj.username, OrderDate = obj.OrderDate, OrderHeaderId = obj.OrderHeaderId };
                 try
                 {
                     var updatedOrderHeader = connection.QueryFirstOrDefault<OrderHeader>(strSql, param);

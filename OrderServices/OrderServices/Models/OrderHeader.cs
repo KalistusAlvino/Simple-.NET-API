@@ -8,7 +8,7 @@ namespace OrderServices.Models
     public class OrderHeader
     {
         public int OrderHeaderId { get; set; }
-        public int userId { get; set; }
+        public string? username { get; set; }
         public DateTime OrderDate { get; set; }
     }
 }

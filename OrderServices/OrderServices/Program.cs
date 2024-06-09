@@ -12,7 +12,6 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddScoped<ICustomer, CustomerDAL>();
 builder.Services.AddScoped<IOrderHeader, OrderHeaderDAL>();
 builder.Services.AddScoped<IOrderDetail, OrderDetailDAL>();
 
@@ -37,22 +36,22 @@ app.UseHttpsRedirection();
 
 
 //Customers Service
-app.MapGet("api/customers", (ICustomer CustomerDAL) =>
-{
-    var customer = CustomerDAL.GetAll();
-    return Results.Ok(customer);
-});
+// app.MapGet("api/customers", (ICustomer CustomerDAL) =>
+// {
+//     var customer = CustomerDAL.GetAll();
+//     return Results.Ok(customer);
+// });
 
-app.MapPost("api/customers", (ICustomer CustomerDAL, Customer customer) =>
-{
-    try{
-        var cust = CustomerDAL.Insert(customer);
-        return Results.Created($"/api/customers/{cust.CustomerId}", cust);
-    }
-    catch(Exception ex){
-        return Results.BadRequest(ex.Message);
-    }
-});
+// app.MapPost("api/customers", (ICustomer CustomerDAL, Customer customer) =>
+// {
+//     try{
+//         var cust = CustomerDAL.Insert(customer);
+//         return Results.Created($"/api/customers/{cust.CustomerId}", cust);
+//     }
+//     catch(Exception ex){
+//         return Results.BadRequest(ex.Message);
+//     }
+// });
 //OrderHeaders Service
 app.MapGet("api/orderHeaders", (IOrderHeader OrderHeaderDAL) =>
 {
@@ -94,14 +93,14 @@ app.MapGet("/orderHeader/{id}", (IOrderHeader orderHeader, int id) =>
     return Results.Ok(header);
 });
 
-app.MapPost("/orderDetails", async (IOrderDetail orderDetail, IProductService productService, OrderDetail obj, IWalletService walletService, IOrderHeader IorderHeader) =>
+app.MapPost("/orderDetails", async (IOrderDetail orderDetail, IProductService productService, OrderDetail obj, IWalletService walletService, IOrderHeader IorderHeader, string paymentid, string paymentwallet) =>
 {
     try
     {
         var products = await productService.GetProductById(obj.ProductId);
         var orderHeader = IorderHeader.GetById(obj.OrderHeaderId);
-        Console.WriteLine($"Searching for wallet with userId: {orderHeader.userId}"); // Output userId for debugging purposes
-        var userWallet = await walletService.GetUserWalletById(orderHeader.userId);
+        Console.WriteLine($"Searching for wallet with username: {orderHeader.username}"); // Output username for debugging purposes
+        var userWallet = await walletService.GetUserWalletByUsername(orderHeader.username);
         if(products == null && userWallet == null)
         {
             return Results.BadRequest("Product or UserWallet not found");
@@ -124,10 +123,12 @@ app.MapPost("/orderDetails", async (IOrderDetail orderDetail, IProductService pr
         };
         var updateWalletStockDTO = new WalletUpdateSaldoDTO
         {
-            userId = orderHeader.userId,
+            username = orderHeader.username,
+            paymentid = paymentid,
+            paymentwallet = paymentwallet,
             saldo = obj.Price
         };
-        Console.WriteLine($"Update Wallet: {updateWalletStockDTO.userId},{updateWalletStockDTO.saldo}"); // Output userId for debugging purposes
+        Console.WriteLine($"Update Wallet: {updateWalletStockDTO.username},{updateWalletStockDTO.saldo}"); // Output username for debugging purposes
         await productService.UpdateProductStock(productUpdateStockDTO);
         await walletService.UpdateSaldoWallet(updateWalletStockDTO);
 
